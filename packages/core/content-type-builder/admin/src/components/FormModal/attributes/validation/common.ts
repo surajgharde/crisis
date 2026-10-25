@@ -195,7 +195,11 @@ const isMinSuperiorThanMax = <
       return true;
     }
 
-    return Math.max(...bounds) !== toNumber(min);
+    const [minBound, maxBound] = bounds;
+
+    // Equal bounds describe a single allowed value, which is valid: only a minimum
+    // strictly above the maximum is an impossible range.
+    return minBound <= maxBound;
   },
 });
 

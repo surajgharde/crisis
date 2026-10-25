@@ -84,7 +84,9 @@ type ColorPickerInputProps = InputProps & {
 const getToggleState = (disabled?: boolean, value?: string | null) => {
   const hasColor = value !== undefined && value !== null && value !== '';
 
-  return { hasColor, isToggleDisabled: Boolean(disabled) && !hasColor };
+  // Only whether the field is editable decides this: already holding a colour does not
+  // make a read-only field editable again.
+  return { hasColor, isToggleDisabled: Boolean(disabled) };
 };
 
 export const ColorPickerInput = React.forwardRef<HTMLButtonElement, ColorPickerInputProps>(

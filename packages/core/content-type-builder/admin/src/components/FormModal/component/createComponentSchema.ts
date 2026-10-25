@@ -5,18 +5,11 @@ import * as yup from 'yup';
 import { getTrad } from '../../../utils/getTrad';
 import { createComponentUid } from '../utils/createUid';
 
-const CATEGORY_PART_SEPARATOR = '_';
-const CATEGORY_PART_REGEX = /^[A-Za-z0-9]+$/;
+// Starts with a letter, then letters, numbers, dashes and underscores — the rule the
+// error message states. Splitting on the underscore alone left no room for a dash.
+const CATEGORY_NAME_REGEX = /^[A-Za-z][A-Za-z0-9_-]*$/;
 
-const isValidCategoryName = (value: string) => {
-  const parts = value.split(CATEGORY_PART_SEPARATOR);
-
-  if (!parts.every((part) => CATEGORY_PART_REGEX.test(part))) {
-    return false;
-  }
-
-  return /^[A-Za-z]/.test(value);
-};
+const isValidCategoryName = (value: string) => CATEGORY_NAME_REGEX.test(value);
 
 export const createComponentSchema = (
   usedComponentNames: Array<string>,

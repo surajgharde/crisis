@@ -309,9 +309,11 @@ const SettingsPage = () => {
     }
   );
 
-  const getTestAddressErrors = React.useCallback(async (body: MutationBody) => {
+  const getTestAddressErrors = React.useCallback(async (address: string) => {
     try {
-      await schema.validate(body, { abortEarly: false });
+      // The schema describes the form field, which is named `email`. `{ to }` is the
+      // shape of the request payload, and validating that left `email` always missing.
+      await schema.validate({ email: address }, { abortEarly: false });
 
       return null;
     } catch (error) {
@@ -322,7 +324,7 @@ const SettingsPage = () => {
   React.useEffect(() => {
     let isCurrent = true;
 
-    getTestAddressErrors({ to: testAddress }).then((errors) => {
+    getTestAddressErrors(testAddress).then((errors) => {
       if (isCurrent) {
         setIsTestAddressValid(errors === null);
       }
@@ -340,7 +342,7 @@ const SettingsPage = () => {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const errors = await getTestAddressErrors({ to: testAddress });
+    const errors = await getTestAddressErrors(testAddress);
 
     if (errors) {
       setFormErrors(errors);

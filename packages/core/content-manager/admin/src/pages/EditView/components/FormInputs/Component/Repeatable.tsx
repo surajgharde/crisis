@@ -151,7 +151,9 @@ const RepeatableComponent = ({
    * room left for another entry.
    */
   const lastAllowedIndex = Number.isFinite(max) ? max - 1 : Number.MAX_SAFE_INTEGER;
-  const nextEntryIndex = value.length - 1;
+  // The entry about to be added lands at the end of the list, so its index is the
+  // current length — `length - 1` is the last entry that already exists.
+  const nextEntryIndex = value.length;
   const canAddEntry = nextEntryIndex <= lastAllowedIndex;
 
   const handleClick = () => {

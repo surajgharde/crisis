@@ -193,8 +193,9 @@ const WebhookForm = ({
 
 const NAME_REGEX = /(^$)|(^[A-Za-z][_0-9A-Za-z ]*$)/;
 
+// Keyed by the scheme as `getUrlProtocol` reports it, which is without the colon.
 const URL_PATTERNS: Record<string, RegExp> = {
-  'http:': /^http:\/\/.*$/,
+  http: /^http:\/\/.*$/,
   https: /^https:\/\/.*$/,
 };
 
