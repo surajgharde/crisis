@@ -62,13 +62,16 @@ function json(key: string, defaultValue?: object) {
 }
 
 const unwrapArrayItem = (item: string) => {
-  const isQuoted = item.startsWith('"') && item.endsWith('"');
+  // Surrounding spaces come first: after a comma every item but the first carries one,
+  // and the quotes can only be recognised once it is gone.
+  const trimmed = _.trim(item, ' ');
+  const isQuoted = trimmed.startsWith('"') && trimmed.endsWith('"');
 
   if (isQuoted) {
-    return item.slice(1, -1);
+    return trimmed.slice(1, -1);
   }
 
-  return _.trim(item, ' ');
+  return trimmed;
 };
 
 function array(key: string, defaultValue: string[]): string[];

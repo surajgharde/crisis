@@ -159,8 +159,9 @@ export const maxLengthGreaterThanMinLength: SuperRefinement<Record<string, unkno
   }
 
   // Both bounds are inclusive, so the range says how many lengths a value is
-  // allowed to have. It has to leave room for at least one of them.
-  const allowedLengths = maxLength - minLength;
+  // allowed to have — an equal pair still allows exactly one. It has to leave
+  // room for at least one of them.
+  const allowedLengths = maxLength - minLength + 1;
 
   if (allowedLengths <= 0) {
     ctx.addIssue({

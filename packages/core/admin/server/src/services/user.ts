@@ -299,7 +299,7 @@ const exists = async (attributes = {} as unknown): Promise<boolean> => {
 };
 
 /** Identity columns of a pending user, in the order the invitation form renders them. */
-const REGISTRATION_INFO_COLUMNS = ['email', 'firstname'] as const;
+const REGISTRATION_INFO_COLUMNS = ['email', 'firstname', 'lastname'] as const;
 
 /**
  * Returns a user registration info

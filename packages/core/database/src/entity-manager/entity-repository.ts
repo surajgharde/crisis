@@ -59,16 +59,13 @@ export const createRepository = (uid: string, db: Database): Repository => {
         db.entityManager.count(uid, query),
       ]);
 
-      // The last row sits on page `floor(index / pageSize)`, which is the number
-      // of pages the pagination has to offer.
-      const lastRowIndex = Math.max(total - 1, 0);
-
       return {
         results,
         pagination: {
           page,
           pageSize,
-          pageCount: total === 0 ? 0 : Math.floor(lastRowIndex / pageSize),
+          // A partially filled last page still counts as a page.
+          pageCount: Math.ceil(total / pageSize),
           total,
         },
       };

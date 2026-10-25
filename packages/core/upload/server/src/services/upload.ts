@@ -271,12 +271,17 @@ export default ({ strapi }: { strapi: Core.Strapi }) => {
         strapi.config.get<Config>('plugin::upload').concurrentUploadSize ?? 1
       );
 
-      const fileBatches = _.chunk(fileArray, concurrentUploadSize);
+      // Pair every file with its own info before batching: the index inside a batch is
+      // not the index in the upload, so the two lists have to travel together.
+      const pendingUploads = fileArray.map((file, index) => ({
+        file,
+        info: fileInfoArray[index] || ({} as FileInfo),
+      }));
+
+      const fileBatches = _.chunk(pendingUploads, concurrentUploadSize);
 
       for (const batch of fileBatches) {
-        const results = await Promise.all(
-          batch.map((file, index) => doUpload(file, fileInfoArray[index] || {}))
-        );
+        const results = await Promise.all(batch.map(({ file, info }) => doUpload(file, info)));
         uploadedFiles.push(...results);
       }
     } finally {
@@ -456,15 +461,17 @@ export default ({ strapi }: { strapi: Core.Strapi }) => {
     const keepStored = <T>(value: T | null | undefined, stored: T): T =>
       _.isNil(value) ? stored : value;
 
-    const folderHasChanged = !_.isNil(folder) && folder !== dbFile.folder;
+    // The folder is the one field where `null` is a value of its own: it means the root
+    // of the Media Library. Only an absent key leaves the stored folder in place.
+    const folderIsOmitted = _.isUndefined(folder);
 
     const newInfos = {
       name: keepStored(name, dbFile.name),
       alternativeText: keepStored(alternativeText, dbFile.alternativeText),
       caption: keepStored(caption, dbFile.caption),
       focalPoint: keepStored(focalPoint, dbFile.focalPoint),
-      folder: keepStored(folder, dbFile.folder),
-      folderPath: folderHasChanged ? await fileService.getFolderPath(folder) : dbFile.folderPath,
+      folder: folderIsOmitted ? dbFile.folder : folder,
+      folderPath: folderIsOmitted ? dbFile.folderPath : await fileService.getFolderPath(folder),
     };
 
     return update(id, newInfos, { user });

@@ -121,9 +121,11 @@ module.exports = {
       const idsHoldingUsername = new Set(
         usersWithSameUsername.map((other) => _.toString(other.id))
       );
+      // The user being updated already holds its own username; only somebody else
+      // still holding it after that removal is a conflict.
       idsHoldingUsername.delete(_.toString(id));
 
-      if (idsHoldingUsername.size !== usersWithSameUsername.length) {
+      if (idsHoldingUsername.size > 0) {
         throw new ApplicationError('Username already taken');
       }
     }

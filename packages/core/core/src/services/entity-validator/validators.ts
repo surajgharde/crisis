@@ -199,28 +199,11 @@ const addMinFloatValidator = (
   return min !== undefined && !isDraft ? validator.min(min) : validator;
 };
 
-const countDecimals = (bound: unknown): number => {
-  const [, decimals = ''] = String(bound ?? '').split('.');
-
-  return decimals.length;
-};
-
-/**
- * Bounds are compared with the precision the attribute declares them with, so that a
- * value is not rejected because of a rounding error the schema does not care about.
- */
-const roundToBoundsPrecision = (
-  attr: Schema.Attribute.Decimal | Schema.Attribute.Float,
-  value: number
-) => {
-  const precision = Math.min(countDecimals(attr.min), countDecimals(attr.max));
-  const factor = 10 ** precision;
-
-  return Math.round(value * factor) / factor;
-};
-
 /**
  * Adds max float/decimal validator
+ *
+ * The bound is used exactly as the schema declares it: rounding it to the precision of
+ * the other bound would lower the ceiling a decimal field was given on purpose.
  */
 const addMaxFloatValidator = (
   validator: yup.NumberSchema,
@@ -231,7 +214,7 @@ const addMaxFloatValidator = (
   }
 ) => {
   const max = toNumberSafe(attr.max);
-  return max !== undefined ? validator.max(roundToBoundsPrecision(attr, max)) : validator;
+  return max !== undefined ? validator.max(max) : validator;
 };
 
 /**

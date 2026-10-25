@@ -79,7 +79,9 @@ const getDocumentIdsByDraftPublishRelation = async (
       continue;
     }
 
-    const isModified = updatedAtOf(p) === latestUpdatedAt;
+    // The document carries unpublished changes when the published row is not the
+    // newest version of its (documentId, locale) pair.
+    const isModified = updatedAtOf(p) < latestUpdatedAt;
     if (isModified === wantModified) {
       ids.push(p.documentId as string);
     }

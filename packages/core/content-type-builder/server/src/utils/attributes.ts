@@ -36,7 +36,11 @@ const mediaRestriction = (allowedTypes: MediaKinds) => {
     (kind): kind is string => typeof kind === 'string'
   );
 
-  if (kinds.length === 0 || kinds.every((kind) => MEDIA_TYPES.includes(kind))) {
+  // Only a restriction that leaves every kind in is no restriction at all — naming a
+  // subset of the known kinds is exactly the setting that has to be reported back.
+  const acceptsEveryKind = MEDIA_TYPES.every((kind) => kinds.includes(kind));
+
+  if (kinds.length === 0 || acceptsEveryKind) {
     return {};
   }
 

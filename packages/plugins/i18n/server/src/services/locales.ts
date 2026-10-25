@@ -109,12 +109,10 @@ const setIsDefault = async (locales: any) => {
   const actualDefault = await getDefaultLocale();
 
   if (Array.isArray(locales)) {
-    const localesByName = new Map(locales.map((locale) => [locale.name, locale]));
-    const defaultLocale = localesByName.get(actualDefault);
-
+    // The stored default is a locale code, not a display name.
     return locales.map((locale) => ({
       ...locale,
-      isDefault: defaultLocale !== undefined && locale.id === defaultLocale.id,
+      isDefault: actualDefault === locale.code,
     }));
   }
   // single locale
