@@ -45,7 +45,9 @@ const resolveInsertIndex = (index: number, position: AddComponentPosition, total
     return index;
   }
 
-  return Math.min(index, Math.max(totalLength - 1, 0));
+  // "Below" lands after the component that was clicked; inserting past the last one
+  // appends, so the list length is the cap.
+  return Math.min(index + 1, totalLength);
 };
 
 interface DynamicComponentProps

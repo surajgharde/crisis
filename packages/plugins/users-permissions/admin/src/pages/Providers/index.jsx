@@ -137,7 +137,9 @@ export const ProvidersPage = () => {
     trackUsage('willEditAuthenticationProvider');
 
     const providersToSubmit = Object.keys(data).reduce((acc, name) => {
-      acc[name] = name === providerToEditName ? { ...values, ...data[name] } : data[name];
+      // The edited values go on top of what is stored — spreading them first let the
+      // stored settings overwrite everything that was just typed.
+      acc[name] = name === providerToEditName ? { ...data[name], ...values } : data[name];
 
       return acc;
     }, {});

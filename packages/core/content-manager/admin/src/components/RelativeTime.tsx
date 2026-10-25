@@ -59,8 +59,10 @@ const RelativeTime = React.forwardRef<HTMLTimeElement, RelativeTimeProps>(
         return interval[intervalUnit] > 0 && Object.keys(interval).includes(intervalUnit);
       }) ?? 'seconds';
 
-    const elapsed = Date.now() - timestamp.getTime();
-    const relativeTime = Math.sign(elapsed) * interval[unit];
+    // The offset is measured from now to the timestamp, so the past is negative:
+    // `formatRelativeTime(-2, 'minutes')` reads "2 minutes ago", `+2` reads "in 2 minutes".
+    const offsetFromNow = timestamp.getTime() - Date.now();
+    const relativeTime = Math.sign(offsetFromNow) * interval[unit];
 
     // Display custom text if interval is less than the threshold
     const customInterval = customIntervals.find(

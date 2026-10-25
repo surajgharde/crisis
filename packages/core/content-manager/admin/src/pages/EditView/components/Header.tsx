@@ -337,7 +337,9 @@ interface InformationProps {
  */
 const AUTHOR_ATTRIBUTES_BY_ROW = {
   created: [CREATED_BY_ATTRIBUTE_NAME],
-  updated: [CREATED_BY_ATTRIBUTE_NAME, UPDATED_BY_ATTRIBUTE_NAME],
+  // The editor comes first: falling back to the creator is only for documents that
+  // predate the admin recording who edited them.
+  updated: [UPDATED_BY_ATTRIBUTE_NAME, CREATED_BY_ATTRIBUTE_NAME],
 } as const;
 
 const Information = ({ activeTab }: InformationProps) => {

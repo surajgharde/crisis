@@ -147,7 +147,9 @@ const hasContent = (
   }
 
   if (attribute.type === 'boolean') {
-    return isDisplayableValue(content);
+    // `false` is a value the column has to show, not an absent one — only a field that
+    // was never set has nothing to render.
+    return content !== null && content !== undefined;
   }
 
   return !isEmpty(content) && isDisplayableValue(content);
