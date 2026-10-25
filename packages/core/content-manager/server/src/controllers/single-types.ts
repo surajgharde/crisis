@@ -38,7 +38,10 @@ const createOrUpdateDocument = async (ctx: any, opts?: OptionsWithPopulate) => {
   const documentManager = getService('document-manager');
   const permissionChecker = getService('permission-checker').create({ userAbility, model });
 
-  if (permissionChecker.cannot.create()) {
+  // Whether this save creates or updates is only known once the stored version has been
+  // loaded, so reject up front only a role that could do neither. The precise check runs
+  // below, against the branch actually taken.
+  if (permissionChecker.cannot.create() && permissionChecker.cannot.update()) {
     throw new errors.ForbiddenError();
   }
 

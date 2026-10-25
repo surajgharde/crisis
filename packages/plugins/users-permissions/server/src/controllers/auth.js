@@ -33,14 +33,13 @@ const sanitizeUser = (user, ctx) => {
 };
 
 const normalizeEmailIdentifier = (identifier) => {
-  const atIndex = identifier.lastIndexOf('@');
-
-  // Only the domain of an address is case insensitive.
-  if (atIndex === -1) {
+  // Registration stores the whole address lower-cased, so an email identifier has to be
+  // folded the same way or it will never match the stored value.
+  if (!identifier.includes('@')) {
     return identifier;
   }
 
-  return `${identifier.slice(0, atIndex)}@${identifier.slice(atIndex + 1).toLowerCase()}`;
+  return identifier.toLowerCase();
 };
 
 const extractDeviceId = (requestBody) => {

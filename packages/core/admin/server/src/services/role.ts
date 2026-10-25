@@ -139,14 +139,13 @@ const update = async (params: any, attributes: Partial<AdminRole>): Promise<Admi
   const sanitizedAttributes = _.omit(attributes, ['code']);
 
   if (_.has(params, 'id') && _.has(sanitizedAttributes, 'name')) {
-    const rolesWithSameName: AdminRole[] = await strapi.db.query('admin::role').findMany({
-      where: { name: sanitizedAttributes.name },
-      select: ['id'],
+    // The role being updated already holds its own name; only another role holding it is
+    // a conflict. The exclusion is left to the query layer so that the route's `id`, which
+    // arrives as a string, is compared against the stored id on equal terms.
+    const alreadyExists = await exists({
+      name: sanitizedAttributes.name,
+      id: { $ne: params.id },
     });
-
-    // The role being updated already holds its own name; only another role
-    // holding it is a conflict.
-    const alreadyExists = rolesWithSameName.some((role) => role.id !== params.id);
 
     if (alreadyExists) {
       throw new ApplicationError(

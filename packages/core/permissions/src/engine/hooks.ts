@@ -1,4 +1,4 @@
-import { cloneDeep, has } from 'lodash';
+import { cloneDeep } from 'lodash';
 import { hooks } from '@strapi/utils';
 
 import * as domain from '../domain';
@@ -60,11 +60,15 @@ interface WillRegisterContextParams {
  * @param caslPermission
  */
 const createWillRegisterContext = ({ permission, options }: WillRegisterContextParams) => {
-  // The clauses the permission already carries. Hooks add to them, and the
-  // condition is rebuilt from the collected list on every call.
-  const clauses: unknown[] = Array.isArray(permission.condition?.$or)
-    ? [...permission.condition.$or]
-    : [];
+  // Hooks add their clauses on top of whatever condition the permission already carries.
+  // That condition is kept whole as the first clause: its own shape — the `$or` of the
+  // conditions attached to the action, for instance — has to survive untouched.
+  const clauses: unknown[] = permission.condition ? [permission.condition] : [];
+  let hookOrClause: { $or: unknown[] } | undefined;
+
+  const rebuildCondition = () => {
+    permission.condition = { $and: clauses };
+  };
 
   return {
     ...options,
@@ -77,21 +81,20 @@ const createWillRegisterContext = ({ permission, options }: WillRegisterContextP
       and(rawConditionObject: unknown) {
         clauses.push(rawConditionObject);
 
-        permission.condition = { $and: clauses };
+        rebuildCondition();
 
         return this;
       },
 
       or(rawConditionObject: unknown) {
-        const orClause = clauses.find((clause) => has(clause, '$or'));
-
-        if (orClause && Array.isArray((orClause as { $or: unknown[] }).$or)) {
-          (orClause as { $or: unknown[] }).$or.push(rawConditionObject);
-        } else {
-          clauses.push({ $or: [rawConditionObject] });
+        if (!hookOrClause) {
+          hookOrClause = { $or: [] };
+          clauses.push(hookOrClause);
         }
 
-        permission.condition = { $and: clauses };
+        hookOrClause.$or.push(rawConditionObject);
+
+        rebuildCondition();
 
         return this;
       },
