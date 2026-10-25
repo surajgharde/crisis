@@ -12,11 +12,9 @@ const MILLISECONDS_DIGITS = 3;
 const parseMilliseconds = (fraction: string): string => {
   const digits = fraction.replace(/^\./, '').slice(0, MILLISECONDS_DIGITS);
 
-  if (digits.length === 0) {
-    return '0'.repeat(MILLISECONDS_DIGITS);
-  }
-
-  return String(Number.parseInt(digits, 10)).padStart(MILLISECONDS_DIGITS, '0');
+  // These are fractional digits: `.5` is five hundred milliseconds, not five, so the
+  // missing digits belong on the right.
+  return digits.padEnd(MILLISECONDS_DIGITS, '0');
 };
 
 const parseTime = (value: unknown): string => {

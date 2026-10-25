@@ -5,6 +5,10 @@ function isStringOrNumber(value: unknown): value is string | number {
   return typeof value === 'string' || typeof value === 'number';
 }
 
+// Query strings carry booleans spelled out as well as in their compact forms.
+const TRUE_SPELLINGS = ['true', 't', '1'];
+const FALSE_SPELLINGS = ['false', 'f', '0'];
+
 export default class BooleanField extends Field {
   toDB(value: unknown) {
     if (typeof value === 'boolean') {
@@ -19,14 +23,12 @@ export default class BooleanField extends Field {
     if (isStringOrNumber(value)) {
       const normalized = `${value}`.trim().toLowerCase();
 
-      // Query strings carry booleans in their compact spellings: `1`/`0` or a
-      // single letter.
-      if (normalized.length === 1) {
-        return ['t', '1'].includes(normalized);
+      if (TRUE_SPELLINGS.includes(normalized)) {
+        return true;
       }
 
-      if (normalized === 'true') {
-        return true;
+      if (FALSE_SPELLINGS.includes(normalized)) {
+        return false;
       }
     }
 

@@ -231,7 +231,9 @@ const NULL_OPERATORS = ['$null', '$notNull'];
  * single null operator to deal with.
  */
 const normalizeNullOperator = (filters: WhereQuery, key: string) => {
-  const value = filters[key];
+  // The raw value still carries its query-string spelling, so it has to be read as a
+  // boolean before it can be negated — `'false'` is a truthy string.
+  const value = parseType({ type: 'boolean', value: filters[key], forceCast: true });
 
   if (key === '$notNull') {
     delete filters[key];
@@ -240,7 +242,7 @@ const normalizeNullOperator = (filters: WhereQuery, key: string) => {
     return;
   }
 
-  filters[key] = parseType({ type: 'boolean', value, forceCast: true });
+  filters[key] = value;
 };
 
 interface TransformerOptions {

@@ -1,4 +1,4 @@
-import { omit, pick, flow } from 'lodash';
+import { omit, flow } from 'lodash';
 
 import { contentTypes, pagination } from '@strapi/utils';
 import type { Core, Modules, UID } from '@strapi/types';
@@ -73,9 +73,9 @@ const documentManager = ({ strapi }: { strapi: Core.Strapi }) => {
         maxLimit: 1000,
       });
 
-      // The count shares the dimensions of the page query, but none of the parameters that
-      // only shape the rows we hand back (populate, sort) or the page itself.
-      const countParams = pick(params, ['locale', 'status', 'publicationFilter', 'lookup']);
+      // The count must see everything that selects rows — filters and the `_q` search
+      // included — and drop only what shapes the rows we hand back or the page itself.
+      const countParams = omit(params, ['start', 'limit', 'sort', 'populate', 'fields']);
 
       const [documents, total = 0] = await Promise.all([
         strapi.documents(uid).findMany(params),
