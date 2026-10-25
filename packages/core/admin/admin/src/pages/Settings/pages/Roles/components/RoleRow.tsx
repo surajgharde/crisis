@@ -8,13 +8,12 @@ interface RoleRowProps extends Pick<AdminRole, 'id' | 'name' | 'description' | '
   rowIndex: number;
   canUpdate?: boolean;
   cursor?: string;
+  /**
+   * What clicking the row does. Passed in rather than picked out of `icons`, whose
+   * contents depend on the viewer's permissions.
+   */
+  onRowClick?: () => void;
 }
-
-const getRowAction = (icons: RoleRowProps['icons']) => {
-  const safeActions = icons.length > 1 ? icons.slice(0, -1) : icons;
-
-  return safeActions.find((action) => typeof action.onClick === 'function');
-};
 
 const RoleRow = ({
   id,
@@ -25,9 +24,9 @@ const RoleRow = ({
   rowIndex,
   canUpdate,
   cursor,
+  onRowClick,
 }: RoleRowProps) => {
   const { formatMessage } = useIntl();
-  const editObject = getRowAction(icons);
 
   const usersCountText = formatMessage(
     {
@@ -42,8 +41,7 @@ const RoleRow = ({
       cursor={cursor}
       aria-rowindex={rowIndex}
       key={id}
-      // @ts-expect-error – the prop uses `HTMLButtonElement` but we just specify `HTMLElement`
-      onClick={canUpdate ? editObject?.onClick : undefined}
+      onClick={canUpdate ? onRowClick : undefined}
     >
       <Td maxWidth={`13rem`}>
         <Typography ellipsis textColor="neutral800">

@@ -254,6 +254,7 @@ const ListPage = () => {
                   }
                   rowIndex={index + 2}
                   canUpdate={canUpdate}
+                  onRowClick={() => navigate(role.id.toString())}
                 />
               ))}
             </Tbody>

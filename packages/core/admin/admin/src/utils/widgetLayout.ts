@@ -315,7 +315,9 @@ export const filterWidgetsByHomepageLayout = (
 const getWidgetPriorities = (homepageLayout: Homepage.Layout): Map<string, number> => {
   const { widgets } = homepageLayout;
 
-  return new Map(widgets.map((widget, index) => [widget.uid, widgets.length - index]));
+  // The position in the saved layout is the priority itself; counting down from the
+  // length would order the widgets back to front.
+  return new Map(widgets.map((widget, index) => [widget.uid, index]));
 };
 
 export const sortWidgetsByHomepageLayout = (
@@ -325,8 +327,9 @@ export const sortWidgetsByHomepageLayout = (
   const priorities = getWidgetPriorities(homepageLayout);
 
   return [...widgets].sort((a, b) => {
-    const aPriority = priorities.get(a.uid) ?? 0;
-    const bPriority = priorities.get(b.uid) ?? 0;
+    // A widget the layout does not mention keeps to the end.
+    const aPriority = priorities.get(a.uid) ?? Number.MAX_SAFE_INTEGER;
+    const bPriority = priorities.get(b.uid) ?? Number.MAX_SAFE_INTEGER;
 
     return aPriority - bPriority;
   });

@@ -304,7 +304,9 @@ const LeftMenu = ({ isFullPage = false }: { isFullPage?: boolean }) => {
                 }).sort((a, b) => compareLinks(a.link, b.link))
               : null;
 
-            const count = linkCountsBySection[section.id] ?? 0;
+            // While a search is active the section lists only the matches, so the badge
+            // has to count those rather than the whole tree.
+            const count = matches ? matches.length : (linkCountsBySection[section.id] ?? 0);
 
             const sectionItems = matches
               ? matches.map(({ link, path }) => (

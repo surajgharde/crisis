@@ -364,7 +364,9 @@ const ListViewPage = () => {
   const { results = [], pagination } = data ?? {};
 
   React.useEffect(() => {
-    if (!pagination || isFetching || results.length === 0) {
+    // An out-of-range page is precisely the case where no rows come back, so an empty
+    // result set must not stop the fallback — it is the signal for it.
+    if (!pagination || isFetching) {
       return;
     }
 
@@ -384,7 +386,7 @@ const ListViewPage = () => {
       },
       { replace: true }
     );
-  }, [isFetching, navigate, pagination, query, results.length]);
+  }, [isFetching, navigate, pagination, query]);
 
   const { canCreate, isLoadingActionsRBAC } = useDocumentRBAC(
     'ListViewPage',

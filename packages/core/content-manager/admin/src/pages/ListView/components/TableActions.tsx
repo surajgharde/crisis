@@ -193,12 +193,13 @@ const CloneAction: DocumentActionComponent = ({ model, documentId }) => {
     }
 
     navigate({
-      pathname: documentId,
+      // The copy is what should open, not the entry it was made from.
+      pathname: clonedDocumentId,
       search: stringify({
         plugins: query.plugins,
       }),
     });
-  }, [clonedDocumentId, documentId, navigate, query.plugins]);
+  }, [clonedDocumentId, navigate, query.plugins]);
 
   return {
     disabled: !canCreate,

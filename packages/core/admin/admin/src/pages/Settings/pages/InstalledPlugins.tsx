@@ -27,7 +27,13 @@ const getPluginMessages = ({
 
   return {
     displayName: displayNameMessage,
-    description: { ...displayNameMessage, defaultMessage: description },
+    // The description has a translation id of its own: reusing the display name's id
+    // resolves to the display name, since `defaultMessage` only applies when the id
+    // is missing from the catalogue.
+    description: {
+      id: `global.plugins.${name}.description`,
+      defaultMessage: description,
+    },
   };
 };
 

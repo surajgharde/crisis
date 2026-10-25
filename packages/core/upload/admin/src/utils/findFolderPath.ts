@@ -18,7 +18,9 @@ export const findFolderPath = (nodes: FolderNode[], targetId: number): FolderNod
     }
 
     for (const child of node.children ?? []) {
-      if (child.id != null && child.children?.length) {
+      // Every child needs its parent recorded. A leaf has no children of its own, but it
+      // still has ancestors — and it is the folder most often being stood in.
+      if (child.id != null) {
         parents.set(child.id, node);
       }
 

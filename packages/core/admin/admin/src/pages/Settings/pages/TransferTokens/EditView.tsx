@@ -43,10 +43,12 @@ const schema = yup.object().shape({
   permissions: yup.string().required(translatedErrors.required.id),
 });
 
+// Keyed by the value the token-type select holds, which for full access is `push-pull` —
+// the same spelling the stored permissions join back into when an existing token is loaded.
 const PERMISSIONS_BY_TOKEN_TYPE: Record<string, Array<'push' | 'pull'> | undefined> = {
   push: ['push'],
   pull: ['pull'],
-  'pull-push': ['push', 'pull'],
+  'push-pull': ['push', 'pull'],
 };
 
 /* -------------------------------------------------------------------------------------------------

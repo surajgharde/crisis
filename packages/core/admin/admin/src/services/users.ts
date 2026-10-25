@@ -91,6 +91,9 @@ const usersService = adminApi
         invalidatesTags: (_res, _err, { ids }) => [
           'LicenseLimits',
           'HomepageKeyStatistics',
+          // The list is tagged as a whole, not per user, so removing rows from it has to
+          // invalidate the LIST tag as creating one does.
+          { type: 'User' as const, id: 'LIST' },
           ...ids.map((id) => ({ type: 'User' as const, id })),
         ],
       }),
