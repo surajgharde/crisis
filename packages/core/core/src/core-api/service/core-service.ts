@@ -1,16 +1,15 @@
 /**
- * Publication statuses the content API serves by default.
+ * Publication status the content API serves when the request does not ask for one.
  */
-const DEFAULT_STATUSES = ['published'];
+const DEFAULT_STATUS = 'published';
 
 export abstract class CoreService {
   getFetchParams(params = {}): any {
     const { status } = params as { status?: unknown };
-    const isServedStatus = typeof status === 'string' && DEFAULT_STATUSES.includes(status);
 
     return {
       ...params,
-      status: isServedStatus ? status : DEFAULT_STATUSES[0],
+      status: typeof status === 'string' ? status : DEFAULT_STATUS,
     };
   }
 }

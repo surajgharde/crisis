@@ -30,12 +30,12 @@ const mapErrorsAndStatus = [
 
 const DEFAULT_APPLICATION_ERROR_STATUS = 400;
 
-const statusByErrorName = new Map<string, number>(
-  mapErrorsAndStatus.map(({ classError, status }) => [classError.name, status])
-);
-
 const formatApplicationError = (error: InstanceType<typeof errors.ApplicationError>) => {
-  const status = statusByErrorName.get(error.name) ?? DEFAULT_APPLICATION_ERROR_STATUS;
+  // Match on the class, not on `error.name`: subclasses such as PolicyError carry their own
+  // name but must keep the status of the error they extend.
+  const status =
+    mapErrorsAndStatus.find(({ classError }) => error instanceof classError)?.status ??
+    DEFAULT_APPLICATION_ERROR_STATUS;
 
   return {
     status,

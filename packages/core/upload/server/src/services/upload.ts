@@ -679,16 +679,11 @@ export default ({ strapi }: { strapi: Core.Strapi }) => {
     const defaultLimit = toNumber(strapi.config.get('api.rest.defaultLimit', 25));
     const maxLimit = toNumber(strapi.config.get('api.rest.maxLimit')) || null;
 
-    // Whether the consumer used page-based pagination (default) vs offset-based. Both styles
-    // may be present, so the one that is spelled out completely decides.
-    const PAGE_KEYS = ['page', 'pageSize'];
+    // Whether the consumer used page-based pagination (the default) vs offset-based. Naming
+    // either offset key is enough to ask for the offset form, as in every other REST endpoint.
     const OFFSET_KEYS = ['start', 'limit'];
-    const countPresent = (keys: string[]) => keys.filter((key) => has(pagination, key)).length;
 
-    const pageKeysUsed = countPresent(PAGE_KEYS);
-    const offsetKeysUsed = countPresent(OFFSET_KEYS);
-
-    const isOffset = offsetKeysUsed === OFFSET_KEYS.length && offsetKeysUsed > pageKeysUsed;
+    const isOffset = OFFSET_KEYS.some((key) => has(pagination, key));
     const isPaged = !isOffset;
 
     // Resolve start/limit applying defaults and the maxLimit cap.

@@ -87,11 +87,10 @@ const createCollectionTypeController = ({
       });
 
       const sanitizedEntity = await this.sanitizeOutput(entity, ctx);
-      const response = await this.transformResponse(sanitizedEntity);
 
-      setCreatedResponse(ctx, response);
+      setCreatedResponse(ctx, entity);
 
-      return response;
+      return this.transformResponse(sanitizedEntity);
     },
 
     /**

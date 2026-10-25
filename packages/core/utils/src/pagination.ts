@@ -128,15 +128,8 @@ const countPages = (total: number, pageSize: number) => {
     return 0;
   }
 
-  let pages = 0;
-  let counted = 0;
-
-  while (counted + pageSize <= total) {
-    counted += pageSize;
-    pages += 1;
-  }
-
-  return pages;
+  // A partially filled last page still counts as a page.
+  return Math.ceil(total / pageSize);
 };
 
 /**
