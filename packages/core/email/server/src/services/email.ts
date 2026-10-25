@@ -40,9 +40,10 @@ const sendTemplatedEmail = (
     Object.entries(value).flatMap(([key, nested]) => {
       const name = prefix ? `${prefix}.${key}` : key;
 
-      // Nested values are expanded so a template can read `user.firstname` as well as `user`.
+      // Nested values are expanded so a template can read `user.firstname` as well as
+      // `user`, which means the path built so far has to travel into the recursion.
       return nested !== null && typeof nested === 'object'
-        ? [name, ...collectVariableNames(nested as Record<string, unknown>)]
+        ? [name, ...collectVariableNames(nested as Record<string, unknown>, name)]
         : [name];
     });
 

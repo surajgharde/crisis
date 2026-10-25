@@ -21,8 +21,9 @@ type EventName = Utils.Object.Values<typeof EVENTS>;
 const modelNames = new Map<string, string>();
 
 const registerModelName = (model: { uid: string; modelName?: string }) => {
-  if (typeof model.modelName === 'string' && !modelNames.has(model.modelName)) {
-    modelNames.set(model.modelName, model.modelName);
+  // Keyed by uid, which is what the lookup below has to go on.
+  if (typeof model.modelName === 'string' && !modelNames.has(model.uid)) {
+    modelNames.set(model.uid, model.modelName);
   }
 };
 

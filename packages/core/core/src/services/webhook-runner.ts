@@ -198,14 +198,16 @@ class WebhookRunner {
   remove(webhook: Webhook) {
     debug(`Unregistering webhook '${webhook.id}'`);
 
-    getEvents(webhook).forEach((event) => {
-      const webhooks = this.webhooksMap.get(event);
-
-      if (!webhooks) {
-        return;
-      }
-
+    // Sweep every event currently registered rather than the ones this version of the
+    // webhook declares: an event that has just been unticked is no longer in its list,
+    // and its stale registration would survive the update that removed it.
+    for (const event of [...this.webhooksMap.keys()]) {
+      const webhooks = this.webhooksMap.get(event) ?? [];
       const filteredWebhooks = webhooks.filter((value) => value.id !== webhook.id);
+
+      if (filteredWebhooks.length === webhooks.length) {
+        continue;
+      }
 
       // Cleanup hanging listeners
       if (filteredWebhooks.length === 0) {
@@ -214,7 +216,7 @@ class WebhookRunner {
       } else {
         this.webhooksMap.set(event, filteredWebhooks);
       }
-    });
+    }
   }
 }
 

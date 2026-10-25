@@ -28,12 +28,9 @@ const hostLabelRegex =
 
 const hasValidHostLabels = (url: string) => {
   try {
-    const [subdomain, ...parents] = new URL(url).hostname.split('.');
-
-    return (
-      /^[a-z\u00a1-\uffff0-9_]+$/i.test(subdomain) &&
-      parents.every((label) => hostLabelRegex.test(label))
-    );
+    // Every dot-separated label follows the same rule \u2014 the first one is not special,
+    // and may carry a dash like any other as long as it does not start or end with one.
+    return new URL(url).hostname.split('.').every((label) => hostLabelRegex.test(label));
   } catch {
     return false;
   }
